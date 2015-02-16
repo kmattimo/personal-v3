@@ -15,7 +15,7 @@ kickstart.options = {
     toggles: {
         details: true,
         notes: true,
-        code: false
+        code: true
     }
 };
 
@@ -159,10 +159,10 @@ kickstart.primaryMenuControls = function () {
     };
 
     // toggle classes on click
-    // toggle.addEventListener('click', function (e) {
-    //     e.stopPropagation();
-    //     toggleClasses();
-    // });
+    toggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleClasses();
+    });
 
     // close menu when clicking on item (for collapsed menu view)
     var closeMenu = function () {

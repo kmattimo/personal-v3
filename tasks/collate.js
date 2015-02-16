@@ -11,7 +11,7 @@ var _               = require('lodash'),
     gutil           = require('gulp-util'),
     handlebars      = require('handlebars'),
     junk            = require('junk'),
-    markdown        = require('marked'),
+    markdown        = require('markdown-it')({ langPrefx: 'language-'}),
     mkpath          = require('mkpath'),
     path            = require('path'),
     snippet         = require('./snippet'),
@@ -27,10 +27,6 @@ var baseDir,
     registerMenuHelper;
 
 baseDir = 'src/toolkit/';
-
-markdown.setOptions({
-    langPrefix: 'language-'
-});
 
 beautifyOptions = {
     'indent,_size': 1,
@@ -161,7 +157,7 @@ parse = function (dir) {
                         }
 
                         if (snips[j].type === 'markdown' ) {
-                            item.snippets[snips[j].name].notes = markdown(snips[j].content);
+                            item.snippets[snips[j].name].notes = markdown.render(snips[j].content);
                         }
 
                         registerItemHelper(s);
@@ -174,11 +170,11 @@ parse = function (dir) {
         try {
             if (item.notes && (item.notes.indexOf('.md') > -1) ) {
                 notes = fs.readFileSync(path.join(currDir, item.notes), 'utf-8');
-                item.notes = markdown(notes);
+                item.notes = markdown.render(notes);
 
             } else {
                 notes = fs.readFileSync(currDir + '/' + items[i] + '.md', 'utf8');
-                item.notes = markdown(notes);
+                item.notes = markdown.render(notes);
             }
         }
         catch (e) {
