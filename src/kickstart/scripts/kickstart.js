@@ -49,7 +49,7 @@ if (kickstart.test.localStorage) {
  */
 kickstart.dom = {
     primaryMenu: document.querySelector('.t-sidebar__menu'),
-    menuItems: document.querySelectorAll('.t-contentMenu a'),
+    menuItems: document.querySelectorAll('.t-sidebar__menu a'),
     menuToggle: document.querySelector('.t-menuToggle')
 };
 
@@ -104,6 +104,8 @@ kickstart.setActiveItem = function () {
             items.push(id);
 
         }
+
+        console.log(items);
 
         return items.reverse();
 

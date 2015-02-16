@@ -3,14 +3,23 @@
 <nav class="t-contentMenu">
 
     <div class="t-contentMenu-wrapper t-wrapper">
+      <button class="t-button t-menuToggle t-icon--menu" type="button">
 
-        <ul>
-            {{#each pages}}
-            <li>
-                <a href="pages.html#{{id}}">{{name}}</a>
-            </li>
-            {{/each}}
-        </ul>
+        <svg>
+          <use xlink:href="#t-icon-menu" />
+        </svg>
+
+        <span class="t-menuToggle__label">Menu</span>
+
+      </button>
+
+      <ul>
+          {{#each pages}}
+          <li>
+              <a href="pages.html#{{id}}">{{name}}</a>
+          </li>
+          {{/each}}
+      </ul>
 
     </div>
 
