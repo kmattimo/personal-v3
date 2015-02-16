@@ -1,0 +1,61 @@
+{
+  "name": "kickstart",
+  "version": "1.0.0",
+  "description": "a kickstarter toolkit for creating websites and living styleguides",
+  "scripts": {
+    "gulp": "gulp",
+    "prestart": "npm install",
+    "build": "npm install && gulp",
+    "start": "gulp --dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/onenorth/kickstart.git"
+  },
+  "keywords": [
+    "toolkit",
+    "styleguide",
+    "patternlab",
+    "pattern",
+    "scaffold"
+  ],
+  "author": "Chris Wigley",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/onenorth/kickstart/issues"
+  },
+  "homepage": "https://github.com/onenorth/kickstart",
+  "devDependencies": {
+    "browser-sync": "^1.9.1",
+    "browserify": "^8.1.1",
+    "change-case": "^2.2.0",
+    "cheerio": "^0.18.0",
+    "del": "^1.1.1",
+    "dirco": "^0.1.12",
+    "glob": "^4.3.5",
+    "gulp": "^3.8.10",
+    "gulp-autoprefixer": "^2.1.0",
+    "gulp-combine-media-queries": "^0.2.0",
+    "gulp-concat": "^2.4.3",
+    "gulp-csso": "^0.2.9",
+    "gulp-if": "^1.2.5",
+    "gulp-imagemin": "^2.1.0",
+    "gulp-plumber": "^0.6.6",
+    "gulp-rename": "^1.2.0",
+    "gulp-sass": "^1.3.2",
+    "gulp-streamify": "0.0.5",
+    "gulp-uglify": "^1.1.0",
+    "gulp-util": "^3.0.2",
+    "handlebars": "^2.0.0",
+    "js-beautify": "^1.5.4",
+    "junk": "^1.0.0",
+    "lodash": "^3.0.1",
+    "marked": "^0.3.3",
+    "mkpath": "^0.1.0",
+    "q": "^1.1.2",
+    "run-sequence": "^1.0.2",
+    "through2": "^0.6.3",
+    "vinyl-source-stream": "^1.0.0",
+    "yaml-front-matter": "^3.2.3"
+  }
+}

@@ -1,0 +1,88 @@
+// menu
+.sg-menu-toggle {
+    display: inline-block;
+    float: right;
+    position: relative;
+    color: map-get($colors, light);
+    text-align: center;
+
+    svg {
+        fill: map-get($colors, light);
+        font-size: 1.25rem;
+        width: 1.5em;
+        height: 1.5em;
+    }
+
+    @media screen and (min-width: 31.5em) {
+        height: $default-spacing*4.5;
+        padding: $default-spacing*1.5;
+    }
+
+    &:hover {
+        background-color: map-get($colors, light);
+        color: map-get($colors, dark);
+        svg {
+            fill: map-get($colors, dark);
+        }
+    }
+
+}
+
+.sg-menu-toggle-label {
+    float: left;
+    font-weight: 400;
+    color: inherit;
+    position: relative;
+    margin-right: $default-spacing;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 1.375rem;
+    line-height: 1;
+    text-rendering: optimizeLegibility;
+}
+
+.t-menu {
+    @include clearfix;
+
+    // background-color: map-get($colors, menu-background);
+    z-index: 0;
+    *zoom: 1;
+
+    .state--menu-active & {
+        visibility: visible;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    a {
+        text-decoration: none;
+        line-height: 1;
+
+        &:hover {
+            text-decoration: none;
+        }
+
+        &.t-active {
+            border-bottom: 5px solid lighten(saturate(map-get($colors, blue),25%), 25%);
+            color: lighten(saturate(map-get($colors, blue),25%), 25%);
+        }
+    }
+}
+
+.t-menu__heading {
+    color: map-get($colors, emphasis);
+
+    &:hover {
+        color: map-get($colors, emphasis);
+    }
+}
+
+.t-controls-menu {
+    border-top: 1px solid map-get($colors, normal);
+}
+
+.t-menu-bar {
+    @include clearfix;
+
+    .state--menu-active & {
+        z-index: 2;
+    }
+}
