@@ -7,20 +7,21 @@ var _               = require('lodash'),
     beautifyHtml    = require('js-beautify').html,
     changeCase      = require('change-case'),
     cheerio         = require('cheerio'),
-    fs              = require('fs'),
+    fs              = require('fs-extra'),
     gutil           = require('gulp-util'),
     handlebars      = require('handlebars'),
     junk            = require('junk'),
-    markdown        = require('markdown-it')({ langPrefx: 'language-'}),
+    marked          = require('marked'),
     mkpath          = require('mkpath'),
     path            = require('path'),
     snippet         = require('./snippet'),
-    yamlFront       = require('yaml-front-matter');
+    matter          = require('gray-matter');
+
+var kickstart = {};
 
 var baseDir,
     beautifyOptions,
     buildMenu,
-    data,
     parse,
     patternCategories,
     registerItemHelper,
@@ -40,12 +41,12 @@ beautifyOptions = {
  * @param  {[type]} item [description]
  * @return {[type]}      [description]
  */
-registerItemHelper = function (item) {
+registerItemHelper = function (name, str) {
 
     try {
-        handlebars.registerHelper(item.id, function() {
+        handlebars.registerHelper(name, function() {
             var helperClasses = (typeof arguments[0] === 'string') ? arguments[0]: '';
-            var $ = cheerio.load(item.content);
+            var $ = cheerio.load(str);
 
             $('*').first().addClass(helperClasses);
 
@@ -95,14 +96,12 @@ parse = function (dir) {
     var currDir = path.join(baseDir, dir);
 
     // create key if it doesn't exist
-    if (!data[dir]) {
-        data[dir] = {};
+    if (!kickstart[dir]) {
+        kickstart[dir] = {};
     }
 
     // get all the non-junk directories and files from the directory
     var raw = fs.readdirSync(currDir).filter(junk.not);
-    var rawFiles, fileNames, childDirs, uniqueFileItems;
-    var template, content, notes;
 
     // iterate files and replace the file extension with empty string
     var fileNames = raw.map(function (e, i) {
@@ -118,70 +117,84 @@ parse = function (dir) {
 
     for (var i = 0, len = items.length; i < len; i++) {
         var item = {};
-        var snips;
+        var snippets = [];
+        var content;
 
         item.id = items[i];
         item.name = changeCase.titleCase(item.id.replace(/-/ig, ' '));
+        item.patterns = [];
 
         try {
             // read the file contents
             content = fs.readFileSync(currDir + '/' + items[i] + '.html', 'utf8').replace(/(\s*(\r?\n|\r))+$/, '');
 
             // parse the file contents for yaml front matter
-            var result = yamlFront.loadFront(content);
+            var matterContent = matter(content);
 
-            // loop through all keys and create property & value off of item object
-            Object.keys(result).forEach(function (key) {
-                item[key] = result[key];
-            });
+            // the matter content has a data property that contains the yaml
+            _.merge(item, matterContent.data);
+            // merge the other matter content but don't include the data prop
+            _.merge(item, _.omit(matterContent, ['orig', 'data']));
 
-            // parse the content for HTML snippets
-            snips = snippet(result.__content);
+            try {
+                var jsonFileName = currDir + '/' + items[i] + '.json';
+                var itemData = fs.readJSONSync(jsonFileName);
+
+                _.merge(kickstart.data, itemData);
+            }
+            catch (err) {}
+
+            // get all the snippets from the file content
+            snippets = snippet(item.content);
 
             // now that we have all the snippets, loop over each one and create
             // a handlebars helper for the snippet
             // use the snippet name and snippet content for the helper
-            if ( snips && snips.length ) {
-                item.snippets = {};
+            if (snippets.length) {
+                //item.snippets = {};
+                snippets.forEach(function(snippet, index, snippets) {
+                    var pattern = {};
+                    var template;
 
-                for (var j = 0, lens = snips.length; j < lens; j++ ) {
-                    var s = {};
-                    if ( snips[j].type ) {
-                        if (snips[j].type === 'html' ) {
-                            s.id = snips[j].name;
-                            s.name = changeCase.titleCase(snips[j].name.replace(/-/ig, ' '));
-                            template = handlebars.compile(snips[j].content);
-                            s.content = beautifyHtml(template(), beautifyOptions);
-
-                            item.snippets[s.id] = s;
+                    if (snippet.type) {
+                        if (snippet.type === 'html') {
+                            pattern.id = snippet.name;
+                            pattern.name = changeCase.titleCase(snippet.name.replace(/-/ig, ' '));
+                            template = handlebars.compile(snippet.content);
+                            pattern.content = beautifyHtml(template(kickstart.data), beautifyOptions);
+                            registerItemHelper(pattern.id, pattern.content);
+                            //item.snippets[p.id] = p;
+                            item.patterns.push(pattern);
                         }
+                        else if (snippet.type === 'markdown') {
 
-                        if (snips[j].type === 'markdown' ) {
-                            item.snippets[snips[j].name].notes = markdown.render(snips[j].content);
+                            var currItem = _.find(item.patterns, { id: snippet.name });
+                            currItem.notes = marked(snippet.content);
                         }
-
-                        registerItemHelper(s);
                     }
-                }
+                });
             }
         }
-        catch (e) { }
+        catch (err) { }
 
         try {
+            var notes = '';
             if (item.notes && (item.notes.indexOf('.md') > -1) ) {
                 notes = fs.readFileSync(path.join(currDir, item.notes), 'utf-8');
-                item.notes = markdown.render(notes);
+                item.notes = marked(notes);
 
             } else {
                 notes = fs.readFileSync(currDir + '/' + items[i] + '.md', 'utf8');
-                item.notes = markdown.render(notes);
+                item.notes = marked(notes);
             }
         }
-        catch (e) {
+        catch (err) {
             item.notes = '';
         }
 
-        data[dir][item.id.replace(/-/g, '')] = item;
+        // TODO:
+        // look at lodash _.indexBy to see how to group patterns by category or type
+        kickstart[dir][item.id.replace(/-/g, '')] = item;
     }
 
 };
@@ -194,23 +207,26 @@ parse = function (dir) {
  */
 module.exports = function(opts, callback) {
     baseDir = opts.base;
-    data = {};
+
+    // initilize some kickstart object properties
+    kickstart.data = {};
+    kickstart.data = fs.readJSONSync('./src/_data/data.json');
+    kickstart.header = fs.readFileSync('./src/toolkit/styleguide/partials/intro.html', 'utf8');
+    kickstart.footer = fs.readFileSync('./src/toolkit/styleguide/partials/outro.html', 'utf8');
 
     // iterate over each pattern directory
     for (var i = 0, len = opts.patterns.length; i < len; i++) {
         parse(opts.patterns[i]);
     }
 
-    // create and write the JSON file
-    mkpath.sync(path.dirname(opts.dest));
-
-    fs.writeFile(opts.dest, JSON.stringify(data), function(err) {
+    // write the kickstart object as a json file, then execute any callback
+    fs.outputJson(opts.dest, kickstart, function(err) {
         if (err) {
-            gutil.log(err);
-        } else {
+            gutil.log(gutil.colors.red(err));
+        }
+        else {
+            gutil.log(gutil.colors.green(opts.dest + ' file created'));
             callback && callback();
         }
     });
 };
-
-
