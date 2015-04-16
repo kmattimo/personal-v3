@@ -33,6 +33,7 @@
     "del": "^1.1.1",
     "dirco": "^0.1.12",
     "glob": "^4.3.5",
+    "gray-matter": "^2.0.0",
     "gulp": "^3.8.10",
     "gulp-autoprefixer": "^2.1.0",
     "gulp-combine-media-queries": "^0.2.0",
@@ -50,12 +51,14 @@
     "js-beautify": "^1.5.4",
     "junk": "^1.0.0",
     "lodash": "^3.0.1",
-    "markdown-it": "^3.0.6",
+    "marked": "^0.3.3",
     "mkpath": "^0.1.0",
     "q": "^1.1.2",
     "run-sequence": "^1.0.2",
     "through2": "^0.6.3",
-    "vinyl-source-stream": "^1.0.0",
-    "yaml-front-matter": "^3.2.3"
+    "vinyl-source-stream": "^1.0.0"
+  },
+  "dependencies": {
+    "fs-extra": "^0.18.1"
   }
 }
