@@ -19,6 +19,15 @@ var _               = require('lodash'),
 
 var kickstart = {};
 
+try {
+    kickstart.config = fs.readFileSync('./config.json', 'utf8');
+}
+catch (err) {
+    gutil.log(gutil.colors.magenta('No config.json file found. Using config argument instead'));
+    kickstart.config = {};
+}
+
+
 var baseDir,
     beautifyOptions,
     buildMenu,
@@ -96,9 +105,9 @@ parse = function (dir) {
     var currDir = path.join(baseDir, dir);
 
     // create key if it doesn't exist
-    if (!kickstart[dir]) {
-        kickstart[dir] = {};
-    }
+    // if (!kickstart[dir]) {
+    //     kickstart[dir] = {};
+    // }
 
     // get all the non-junk directories and files from the directory
     var raw = fs.readdirSync(currDir).filter(junk.not);
@@ -119,10 +128,11 @@ parse = function (dir) {
         var item = {};
         var snippets = [];
         var content;
+        var itemName = items[i].toLowerCase();
 
-        item.id = items[i];
-        item.name = changeCase.titleCase(item.id.replace(/-/ig, ' '));
-        item.patterns = [];
+        // item.id = items[i];
+        // item.name = changeCase.titleCase(item.id.replace(/-/ig, ' '));
+        // item.patterns = [];
 
         try {
             // read the file contents
@@ -135,6 +145,8 @@ parse = function (dir) {
             _.merge(item, matterContent.data);
             // merge the other matter content but don't include the data prop
             _.merge(item, _.omit(matterContent, ['orig', 'data']));
+
+            item.category = (item.category || currDir).toLowerCase();
 
             try {
                 var jsonFileName = currDir + '/' + items[i] + '.json';
@@ -153,24 +165,31 @@ parse = function (dir) {
             if (snippets.length) {
                 //item.snippets = {};
                 snippets.forEach(function(snippet, index, snippets) {
-                    var pattern = {};
+                    var pattern;
                     var template;
+                    var associatedPattern;
 
-                    if (snippet.type) {
-                        if (snippet.type === 'html') {
-                            pattern.id = snippet.name;
-                            pattern.name = changeCase.titleCase(snippet.name.replace(/-/ig, ' '));
-                            template = handlebars.compile(snippet.content);
-                            pattern.content = beautifyHtml(template(kickstart.data), beautifyOptions);
-                            registerItemHelper(pattern.id, pattern.content);
-                            //item.snippets[p.id] = p;
-                            item.patterns.push(pattern);
-                        }
-                        else if (snippet.type === 'markdown') {
+                    if (!snippet.type) { return; }
 
-                            var currItem = _.find(item.patterns, { id: snippet.name });
-                            currItem.notes = marked(snippet.content);
-                        }
+                    if (snippet.type === 'html') {
+                        pattern = {};
+                        pattern.id = snippet.name;
+                        pattern.name = changeCase.titleCase(snippet.name.replace(/-/ig, ' '));
+                        pattern.patternGroup = item.category;
+                        pattern.patternSubGroup = itemName;
+                        pattern.template = snippet.content;
+                        pattern.key = pattern.patternGroup + "-" + pattern.id;
+                    }
+                    else if (snippet.type === 'markdown') {
+                        associatedPattern = _.find(kickstart.patterns, { id: snippet.name });
+                        associatedPattern.notes = marked(snippet.content);
+                    }
+
+                    if (pattern) {
+                        template = handlebars.compile(pattern.template);
+                        pattern.content = beautifyHtml(template(kickstart.data), beautifyOptions);
+                        registerItemHelper(pattern.id, pattern.content);
+                        kickstart.patterns.push(pattern);
                     }
                 });
             }
@@ -194,7 +213,8 @@ parse = function (dir) {
 
         // TODO:
         // look at lodash _.indexBy to see how to group patterns by category or type
-        kickstart[dir][item.id.replace(/-/g, '')] = item;
+        //kickstart[dir][item.id.replace(/-/g, '')] = item;
+        //kickstart.patterns.push(item);
     }
 
 };
@@ -209,15 +229,16 @@ module.exports = function(opts, callback) {
     baseDir = opts.base;
 
     // initilize some kickstart object properties
-    kickstart.data = {};
     kickstart.data = fs.readJSONSync('./src/_data/data.json');
     kickstart.header = fs.readFileSync('./src/toolkit/styleguide/partials/intro.html', 'utf8');
     kickstart.footer = fs.readFileSync('./src/toolkit/styleguide/partials/outro.html', 'utf8');
-
+    kickstart.patterns = [];
     // iterate over each pattern directory
     for (var i = 0, len = opts.patterns.length; i < len; i++) {
         parse(opts.patterns[i]);
     }
+
+    // var test = _.groupBy(kickstart.patterns, 'patternGroup');
 
     // write the kickstart object as a json file, then execute any callback
     fs.outputJson(opts.dest, kickstart, function(err) {
