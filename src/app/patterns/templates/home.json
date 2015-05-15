@@ -1,0 +1,15 @@
+{
+    "home-template": {
+        "primaryButton": "Home Template Button 1",
+        "secondButton": "Home Template Button 2",
+        "thirdButton": "Home Template Button 3",
+
+        "accordion": {
+            "listItems": [
+                {"value": "This Item"},
+                {"value": "Is Defined In"},
+                {"value": "The Home Template JSON"}
+            ]
+        }
+    }
+}

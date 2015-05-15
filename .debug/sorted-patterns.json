@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Buttons",
+    "items": {
+      "name": "Button",
+      "notes": "<p>Add the <code>.btn</code> class to an anchor or button element</p>\n",
+      "data": {
+        "text": "Default Button",
+        "order": 1
+      },
+      "order": 1
+    }
+  },
+  {
+    "name": "Form Elements",
+    "items": {
+      "name": "Checkbox",
+      "notes": "",
+      "data": {},
+      "order": ""
+    }
+  },
+  {
+    "name": "Lists",
+    "items": {
+      "name": "Ordered",
+      "notes": "<p>Use an ordered list when list item order matters</p>\n",
+      "data": {},
+      "order": ""
+    }
+  },
+  {
+    "name": "Typography",
+    "items": {
+      "name": "Body Copy",
+      "notes": "<p>This is typical body-copy</p>\n",
+      "data": {},
+      "order": ""
+    }
+  },
+  {
+    "name": "Modules",
+    "items": {
+      "name": "Accordion",
+      "notes": "<p>This is an accordion</p>\n",
+      "data": {},
+      "order": ""
+    }
+  },
+  {
+    "name": "Pages",
+    "items": {
+      "name": "Home",
+      "notes": "<p>This is the home page</p>\n",
+      "data": {
+        "layout": "default",
+        "page-title": "Home Page"
+      },
+      "order": ""
+    }
+  },
+  {
+    "name": "Templates",
+    "items": {
+      "name": "Home",
+      "notes": "<p>This is the home page template</p>\n",
+      "data": {
+        "name": "Home Template",
+        "layout": "default"
+      },
+      "order": ""
+    }
+  }
+]

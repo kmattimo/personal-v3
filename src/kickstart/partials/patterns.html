@@ -1,0 +1,18 @@
+{{#each patterns}}
+  <section>
+
+    <header>
+
+      <h1>{{name}}</h1>
+      {{#if notes }}
+      <div class="ks-pattern__notes">
+        {{{notes}}}
+      </div>
+      {{/if}}
+
+    </header>
+
+      {{> partials }}
+
+  </section>
+{{/each}}

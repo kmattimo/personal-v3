@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html id="kickstart-html">
+
+    <head id="kickstart-head">
+
+        <title>Kickstart</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+        <link href="/kickstart/styles/styleguide.css" rel="stylesheet" media="all">
+
+    </head>
+
+    <body id="kickstart-body">
+
+        <!-- kickstart header -->
+        <header class="ks-header" role="banner">
+
+            <div class="ks-nav">
+                {{> patternNavigation }}
+            </div>
+
+        </header>
+        <!-- end kickstart header -->
+
+        <!-- iframe -->
+        <div class="ks-viewport">
+            <div class="ks-viewport__wrapper">
+                <iframe id="ks-viewport" name="ks-viewport" sandbox="allow-same-origin allow-scripts allow-popups allow-top-navigation" scrolling="yes"></iframe>
+            </div>
+        </div>
+        <!-- end iframe -->
+        <script src="/kickstart/scripts/prism.js"></script> 
+        <script src="/kickstart/scripts/styleguide.js"></script>
+    </body>
+
+</html>

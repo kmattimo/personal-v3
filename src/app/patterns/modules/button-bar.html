@@ -1,0 +1,13 @@
+---
+notes: A button bar is a group of buttons with a shared context
+primary-button-text: Primary Button
+button-text: Button
+---
+
+<div class="button-bar">
+
+    {{> button.primary-button classes=first.classes buttonText={{primary-button-text}} }}
+    {{> button classes=second.classes buttonText={{button-text}} }}
+    {{> button classes=third.classes buttonText={{button-text}} }}
+
+</div>

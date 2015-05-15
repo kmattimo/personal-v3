@@ -24,58 +24,7 @@ var autoprefix  = require('gulp-autoprefixer'),
     streamify   = require('gulp-streamify'),
     uglify      = require('gulp-uglify');
 
-var config = {
-
-    dev: gutil.env.dev,
-
-    src: {
-        scripts: {
-            kickstart: [
-                './src/kickstart/scripts/prism.js',
-                './src/kickstart/scripts/kickstart.js'
-            ],
-            toolkit: [
-                './src/toolkit/assets/scripts/toolkit.js'
-            ]
-        },
-        styles: {
-            kickstart:'./src/kickstart/styles/kickstart.scss',
-            toolkit: './src/toolkit/assets/styles/toolkit.scss'
-        },
-        images: {
-            kickstart: './src/kickstart/images/**/*',
-            toolkit: './src/toolkit/assets/images/**/*'
-        },
-        fonts: {
-            kickstart: './src/kickstart/fonts/*',
-            toolkit: './src/toolkit/assets/fonts/*'
-        },
-        styleguide: './src/toolkit/styleguide/*.html',
-        pages: './src/toolkit/pages/*.html',
-        patterns: [
-            'components',
-            'modules',
-            'templates',
-            'pages',
-            'documentation'
-        ]
-    },
-
-    dest: './dist',
-
-    browsers: [
-        'ie >= 8',
-        'ie_mob >= 8',
-        'ff >= 30',
-        'chrome >= 32',
-        'safari >= 6',
-        'opera >= 23',
-        'ios >= 6',
-        'android 2.3',
-        'android >= 4.3',
-        'bb >= 10'
-    ]
-};
+var config = require('./config.json');
 
 // [1] plumber prevents the node process from stopping
 //      when an error is thrown, but it stops any file change
@@ -102,42 +51,42 @@ gulp.task('styles:kickstart', function() {
         .pipe(gulpif(!config.dev, combinemq()))
         .pipe(autoprefix(config.browsers))
         .pipe(gulpif(!config.dev, csso()))
-        .pipe(rename('kickstart.css'))
+        .pipe(rename('styleguide.css'))
         .pipe(gulp.dest(config.dest + '/kickstart/styles'))
         .pipe(gulpif(config.dev, reload({stream: true})));
 });
 
-gulp.task('styles:toolkit', function() {
-    return gulp.src(config.src.styles.toolkit)
+gulp.task('styles:app', function() {
+    return gulp.src(config.src.styles.app)
         .pipe(plumber({ errorHandler: onError }))
         .pipe(sass())
         .pipe(gulpif(!config.dev, combinemq()))
         .pipe(autoprefix(config.browsers))
         .pipe(gulpif(!config.dev, csso()))
-        .pipe(gulp.dest(config.dest + '/toolkit/styles'))
+        .pipe(gulp.dest(config.dest + '/app/styles'))
         .pipe(gulpif(config.dev, reload({stream: true})));
 });
 
-gulp.task('styles', ['styles:kickstart','styles:toolkit']);
+gulp.task('styles', ['styles:kickstart','styles:app']);
 
 // scripts
 gulp.task('scripts:kickstart', function() {
     return gulp.src(config.src.scripts.kickstart)
-        .pipe(concat('kickstart.js'))
+        //.pipe(concat('styleguide.js'))
         .pipe(gulpif(!config.dev, uglify()))
         .pipe(gulp.dest(config.dest + '/kickstart/scripts'));
 });
 
-gulp.task('scripts:toolkit', function() {
-    return browserify(config.src.scripts.toolkit)
+gulp.task('scripts:app', function() {
+    return browserify(config.src.scripts.app)
         .bundle()
         .on('error', onError)
-        .pipe(source('toolkit.js'))
+        .pipe(source('main.js'))
         .pipe(gulpif(!config.dev, streamify(uglify())))
-        .pipe(gulp.dest(config.dest + '/toolkit/scripts'));
+        .pipe(gulp.dest(config.dest + '/app/scripts'));
 });
 
-gulp.task('scripts', ['scripts:kickstart','scripts:toolkit']);
+gulp.task('scripts', ['scripts:kickstart','scripts:app']);
 
 // images
 //
@@ -161,8 +110,8 @@ gulp.task('images:kickstart', function() {
         .pipe(gulp.dest(config.dest + '/kickstart/images'))
 });
 
-gulp.task('images:toolkit', ['favicon'], function() {
-    return gulp.src(config.src.images.toolkit)
+gulp.task('images:app', ['favicon'], function() {
+    return gulp.src(config.src.images.app)
         .pipe(gulpif(!config.dev, imagemin({
             progressive: true, // 1
             optimizationLevel: 3, // 2
@@ -172,10 +121,10 @@ gulp.task('images:toolkit', ['favicon'], function() {
                 { removeEmptyAttrs: false }             // 3c
             ]
         })))
-        .pipe(gulp.dest(config.dest + '/toolkit/images'));
+        .pipe(gulp.dest(config.dest + '/app/images'));
 });
 
-gulp.task('images', ['images:kickstart','images:toolkit']);
+gulp.task('images', ['images:kickstart','images:app']);
 
 // fonts
 gulp.task('fonts:kickstart', function() {
@@ -183,12 +132,12 @@ gulp.task('fonts:kickstart', function() {
         .pipe(gulp.dest(config.dest + '/kickstart/fonts'));
 });
 
-gulp.task('fonts:toolkit', function() {
-    return gulp.src(config.src.fonts.toolkit)
-        .pipe(gulp.dest(config.dest + '/toolkit/fonts'));
+gulp.task('fonts:app', function() {
+    return gulp.src(config.src.fonts.app)
+        .pipe(gulp.dest(config.dest + '/app/fonts'));
 });
 
-gulp.task('fonts', ['fonts:kickstart','fonts:toolkit']);
+gulp.task('fonts', ['fonts:kickstart','fonts:app']);
 
 // extras
 gulp.task('favicon', function() {
@@ -198,17 +147,29 @@ gulp.task('favicon', function() {
 
 // collate
 gulp.task('collate', function() {
+    var deferred = q.defer();
+    var options = {
+            patterns: config.src.patterns,
+            dest: config.dest + '/kickstart/data/styleguide-data.json',
+            debug: false,
+            logErrors: true,
+            logVerbose: true
+        };
 
-    var deferred, opts;
+    collate(options, deferred.resolve);
 
-    deferred = q.defer();
-    opts = {
-        base: 'src/toolkit',
-        patterns: config.src.patterns,
-        dest: config.dest + '/kickstart/data/kickstart-data.json'
-    };
+    return deferred.promise;
+});
 
-    collate(opts, deferred.resolve);
+gulp.task('build:patterns', function() {
+    var
+        deferred = q.defer(),
+        opts = {
+            data: config.dest + '/kickstart/data/styleguide-data.json',
+            template: true
+        };
+
+    compile(opts, deferred.resolve);
 
     return deferred.promise;
 });
@@ -217,7 +178,7 @@ gulp.task('collate', function() {
 gulp.task('build:kickstart', function() {
 
     var opts = {
-        data: config.dest + '/kickstart/data/kickstart-data.json',
+        data: config.dest + '/kickstart/data/styleguide-data.json',
         template: false
     };
 
@@ -226,19 +187,20 @@ gulp.task('build:kickstart', function() {
         .pipe(gulp.dest(config.dest));
 });
 
-gulp.task('build:toolkit', function() {
+gulp.task('build:app', function() {
     var opts = {
-        data: config.dest + '/kickstart/data/kickstart-data.json',
+        data: config.dest + '/kickstart/data/styleguide-data.json',
         template: true
     };
 
-    return gulp.src(['./src/toolkit/templates/*.html', './src/toolkit/pages/*.html'])
+    return gulp.src(['./src/app/templates/*.html', './src/app/pages/*.html'])
         .pipe(compile(opts))
         .pipe(gulp.dest(config.dest));
 });
 
 gulp.task('build', ['collate'], function() {
-    gulp.start('build:kickstart', 'build:toolkit');
+    //gulp.start('build:kickstart', 'build:patterns');
+    gulp.start('build:patterns');
 });
 
 // server
@@ -247,6 +209,7 @@ gulp.task('browser-sync', function() {
         server: {
             baseDir: config.dest
         },
+        browsers: ['chrome'],
         notify: false,
         logPrefix: 'KICKSTART'
     });
@@ -254,12 +217,12 @@ gulp.task('browser-sync', function() {
 
 // watch
 gulp.task('watch', ['browser-sync'], function() {
-    gulp.watch('src/toolkit/**/*.{html,md}', ['build',reload]);
-    gulp.watch('src/kickstart/styles/**/*.{sass,scss}', ['styles:kickstart']);
-    gulp.watch('src/toolkit/assets/styles/**/*.{sass,scss}', ['styles:toolkit']);
-    gulp.watch('src/kickstart/scripts/**/*.js', ['scripts:kickstart', reload]);
-    gulp.watch('src/toolkit/assets/scripts/**/*.js', ['scripts:toolkit', reload]);
-    gulp.watch(config.src.images.toolkit, ['images:toolkit', reload]);
+    gulp.watch('src/app/**/*.{html,md}', ['build',reload]);
+    gulp.watch('src/kickstart/assets/styles/**/*.{sass,scss}', ['styles:kickstart']);
+    gulp.watch('src/app/assets/styles/**/*.{sass,scss}', ['styles:app']);
+    gulp.watch('src/kickstart/assets/scripts/**/*.js', ['scripts:kickstart', reload]);
+    gulp.watch('src/app/assets/scripts/**/*.js', ['scripts:app', reload]);
+    gulp.watch(config.src.images.app, ['images:app', reload]);
 });
 
 // default build task
@@ -274,7 +237,7 @@ gulp.task('default', ['clean'], function() {
 
     // build in sequence order
     runSequence(tasks, function() {
-        if (config.dev) {
+        if (!config.dev) {
             gulp.start('watch');
         }
     });

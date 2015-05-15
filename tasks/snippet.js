@@ -38,9 +38,9 @@ function getSnippets(body) {
 
             if(snippet[1] === 'remove') { snippet[3] = String(removeBlockIndex++); }
             if(snippet[4]) {
-                snippets[[snippet[1], snippet[3].trim(), snippet[4].trim()].join(snippetsJoinChar)] = last = [];
+                snippets[ [snippet[1], snippet[3].trim(), snippet[4].trim() ].join(snippetsJoinChar) ] = last = [];
             } else {
-                snippets[[snippet[1], snippet[3].trim()].join(snippetsJoinChar)] = last = [];
+                snippets[ [snippet[1], snippet[3].trim() ].join(snippetsJoinChar) ] = last = [];
             }
         }
 

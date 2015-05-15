@@ -1,0 +1,70 @@
+{
+    "dev": "gutil.env.dev",
+
+    "src": {
+        "scripts": {
+            "kickstart": [
+                "./src/kickstart/assets/scripts/prism.js",
+                "./src/kickstart/assets/scripts/styleguide.js"
+            ],
+            "app": [
+                "./src/app/assets/scripts/main.js"
+            ]
+        },
+        "styles": {
+            "kickstart":"./src/kickstart/assets/styles/styleguide.scss",
+            "app": "./src/app/assets/styles/main.scss"
+        },
+        "images": {
+            "kickstart": "./src/kickstart/assets/images/**/*",
+            "app": "./src/app/assets/images/**/*"
+        },
+        "fonts": {
+            "kickstart": "./src/kickstart/assets/fonts/*",
+            "app": "./src/app/assets/fonts/*"
+        },
+        "patterns": "./src/app/patterns/**/*.{html,hbs}"
+    },
+
+    "dest": "./public",
+
+    "browsers": [
+        "ie >= 8",
+        "ie_mob >= 8",
+        "ff >= 30",
+        "chrome >= 32",
+        "safari >= 6",
+        "opera >= 23",
+        "ios >= 6",
+        "android 2.3",
+        "android >= 4.3",
+        "bb >= 10"
+    ],
+    "navigation": {
+        "components": {
+            "title": "Components",
+            "items": [
+                {
+                    "name": "Colors",
+                    "slug": "color"
+                },
+                {
+                    "name": "Buttons",
+                    "slug": "button"
+                },
+                {
+                    "name": "Form Elements",
+                    "slug": "form-elements"
+                },
+                {
+                    "name": "Lists",
+                    "slug": "list"
+                },
+                {
+                    "name": "Typography",
+                    "slug": "typography"
+                }
+            ]
+        }
+    }
+}

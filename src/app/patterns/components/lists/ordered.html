@@ -1,0 +1,17 @@
+---
+notes: Use an ordered list when list item order matters
+---
+
+{{#with orderedList}}
+{{#if title}}<h2>{{title}}</h2>{{/if}}
+<ol>
+    {{#listItems}}
+        <li class="list-item">
+            {{value}}
+            {{#if content}}
+            {{{content}}}
+            {{/if}}
+        </li>
+    {{/listItems}}
+</ol>
+{{/with}}

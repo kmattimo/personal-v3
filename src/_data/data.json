@@ -1,3 +1,12 @@
 {
-  "button-text": "My Button Yo"
+    "styleguideTitle": "Welcome To Our Styleguide",
+    "styleguideIntro": "This styleguide should help you when building out your site. We hope it works for you!",
+    "buttonText": "Button",
+    "unordered-list": {
+        "listItems": [
+            {"value": "Sample Item 1"},
+            {"value": "Sample Item 2"},
+            {"value": "Sample Item 3"}
+        ]
+    }
 }
