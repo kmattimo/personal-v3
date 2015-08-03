@@ -20,6 +20,7 @@ body {
 body {
     max-width: $max-width;
     margin: auto;
+    line-height: 1.4;
 }
 
 p {
@@ -32,6 +33,6 @@ p {
 }
 
 [role="main"] {
-    padding: 1%;
+    padding: 1em;
     overflow: hidden;
 }

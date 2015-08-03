@@ -1,15 +1,9 @@
 ---
 notes: Navigation modules are used when a page needs navigation
-nav-title: Navigation Title
 ---
 
-<nav class="nav">
+<nav class="nav {{classes}}">
 
-  <!-- optional navigation heading -->
-  <header>
-    <h1>{{nav-title}}</h1>
-  </header>
-
-  {{> lists.unordered }}
+  {{> components/lists/unordered classes="link-list--horizontal" }}
 
 </nav>

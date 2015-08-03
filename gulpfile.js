@@ -1,248 +1,231 @@
 'use strict';
 
+// node modules
+var _ = require('lodash');
+var browserify  = require("browserify");
+var browserSync = require("browser-sync");
+var bsreload = browserSync.reload;
+var buffer = require('vinyl-buffer');
+var del = require('del');
+var fs = require('fs-extra');
+var mergeStream = require('merge-stream');
+var path = require('path');
+var q = require('q');
+var source = require('vinyl-source-stream');
+var watchify = require('watchify');
+
 // gulp modules
-var autoprefix  = require('gulp-autoprefixer'),
-    browserify  = require("browserify"),
-    browserSync = require("browser-sync"),
-    collate     = require('./tasks/collate'),
-    combinemq   = require('gulp-combine-media-queries'),
-    compile     = require('./tasks/compile'),
-    concat      = require('gulp-concat'),
-    csso        = require('gulp-csso'),
-    del         = require('del'),
-    gulp        = require('gulp'),
-    gutil       = require('gulp-util'),
-    gulpif      = require('gulp-if'),
-    imagemin    = require('gulp-imagemin'),
-    plumber     = require('gulp-plumber'),
-    q           = require('q'),
-    rename      = require('gulp-rename'),
-    reload      = browserSync.reload,
-    runSequence = require('run-sequence'),
-    sass        = require('gulp-sass'),
-    source      = require('vinyl-source-stream'),
-    streamify   = require('gulp-streamify'),
-    uglify      = require('gulp-uglify');
+var gulp = require('gulp');
+var plugins = require('gulp-load-plugins')();
 
-var config = require('./config.json');
+// kickstart modules
+var kickstart = require('kickstart-compiler');
+var styleguide = require('kickstart-styleguide');
 
-// [1] plumber prevents the node process from stopping
-//      when an error is thrown, but it stops any file change
-//      monitoring. If we emit the 'end' event
-//      the process continues to listen for changes, allowing us
-//      to correct our file(s) and return the app to a normal state
-function onError(err) {
-    gutil.beep(); // make some noise
-    gutil.log(gutil.colors.red(err)); // emit the error to the console
+// user project configuration
+var config = require('./config.js');
 
-    this.emit('end'); // 1
-}
+// error handler
+var onError = function (err, cb) {
+    plugins.util.beep();
+    plugins.util.log(plugins.util.colors.red(err));
 
-// clean destination files
-gulp.task('clean', function(callback) {
-    del([config.dest], callback);
+    if (typeof this.emit === 'function') this.emit('end');
+};
+
+// clean task
+gulp.task('clean', function (cb) {
+    del([
+        config.dest.base
+    ], cb);
 });
 
-// styles
-gulp.task('styles:kickstart', function() {
-    return gulp.src(config.src.styles.kickstart)
-        .pipe(plumber({errorHandler: onError}))
-        .pipe(sass())
-        .pipe(gulpif(!config.dev, combinemq()))
-        .pipe(autoprefix(config.browsers))
-        .pipe(gulpif(!config.dev, csso()))
-        .pipe(rename('styleguide.css'))
-        .pipe(gulp.dest(config.dest + '/kickstart/styles'))
-        .pipe(gulpif(config.dev, reload({stream: true})));
+// styles task
+gulp.task('styles', function () {
+    return gulp.src(config.src.styles)
+        .pipe(plugins.plumber({ errorHandler: onError }))
+        .pipe(plugins.sass(config.sass.settings))
+        .pipe(plugins.if(!config.dev, plugins.combineMediaQueries()))
+        .pipe(plugins.autoprefixer(config.sass.autoprefixer))
+        .pipe(plugins.if(!config.dev, plugins.csso()))
+        .pipe(gulp.dest(config.dest.styles))
+        .pipe(plugins.if(config.dev, bsreload({ stream: true })));
 });
 
-gulp.task('styles:app', function() {
-    return gulp.src(config.src.styles.app)
-        .pipe(plumber({ errorHandler: onError }))
-        .pipe(sass())
-        .pipe(gulpif(!config.dev, combinemq()))
-        .pipe(autoprefix(config.browsers))
-        .pipe(gulpif(!config.dev, csso()))
-        .pipe(gulp.dest(config.dest + '/app/styles'))
-        .pipe(gulpif(config.dev, reload({stream: true})));
+// scripts task
+gulp.task('scripts', function () {
+
+    var browserifyTask = function () {
+
+        var browserifyThis = function (bundleConfig) {
+            if (config.dev) {
+                _.extend(config.src.scriptBundles, watchify.args, { debug: true });
+
+                bundleConfig = _.omit(bundleConfig, ['external', 'require']);
+            }
+
+            var b = browserify(bundleConfig);
+
+            var bundle = function () {
+
+                return b
+                    .bundle()
+                    .on('error', onError)
+                    .pipe(source(bundleConfig.outputName))
+                    .pipe(gulp.dest(bundleConfig.dest))
+                    .pipe(plugins.if(config.dev, bsreload({ stream: true })));
+            };
+
+            if (config.dev) {
+                b = watchify(b);
+                b.on('update', bundle);
+            } else {
+                if (bundleConfig.require) b.require(bundleConfig.require);
+                if (bundleConfig.external) b.external(bundleConfig.external);
+            }
+
+            return bundle();
+        };
+
+        return mergeStream.apply(gulp, _.map(config.scriptBundles, browserifyThis));
+
+    }
+
+    return browserifyTask();
+
 });
 
-gulp.task('styles', ['styles:kickstart','styles:app']);
-
-// scripts
-gulp.task('scripts:kickstart', function() {
-    return gulp.src(config.src.scripts.kickstart)
-        //.pipe(concat('styleguide.js'))
-        .pipe(gulpif(!config.dev, uglify()))
-        .pipe(gulp.dest(config.dest + '/kickstart/scripts'));
+// images task
+gulp.task('images', function () {
+    return gulp.src(config.src.images)
+        .pipe(plugins.changed(config.dest.images))
+        .pipe(plugins.if(!config.dev, plugins.imagemin(config.images)))
+        .pipe(gulp.dest(config.dest.images))
+        .pipe(plugins.if(config.dev, bsreload({ stream: true })));
 });
 
-gulp.task('scripts:app', function() {
-    return browserify(config.src.scripts.app)
-        .bundle()
-        .on('error', onError)
-        .pipe(source('main.js'))
-        .pipe(gulpif(!config.dev, streamify(uglify())))
-        .pipe(gulp.dest(config.dest + '/app/scripts'));
+// fonts task
+gulp.task('fonts', function () {
+    return gulp.src(config.src.fonts)
+        .pipe(gulp.dest(config.dest.fonts));
 });
 
-gulp.task('scripts', ['scripts:kickstart','scripts:app']);
-
-// images
-//
-// [1] lossless conversion to progressive
-// [2] most effective according to OptiPNG
-// [3a] don't remove the viewbox atribute from the SVG
-// [3b] don't remove Useless Strokes and Fills
-// [3c] don't remove Empty Attributes from the SVG
-
-gulp.task('images:kickstart', function() {
-    return gulp.src(config.src.images.kickstart)
-        .pipe(imagemin({
-            progressive: true,
-            optimizationLevel: 3,
-            svgoPlugins: [
-                { removeViewBox: false },               // 3a
-                { removeUselessStrokeAndFill: false },  // 3b
-                { removeEmptyAttrs: false }             // 3c
-            ]
-        }))
-        .pipe(gulp.dest(config.dest + '/kickstart/images'))
+// copy extra files task
+gulp.task('copy:extras', function () {
+    return gulp.src('./src/app/extras/**/*')
+        .pipe(gulp.dest(config.dest.app));
 });
 
-gulp.task('images:app', ['favicon'], function() {
-    return gulp.src(config.src.images.app)
-        .pipe(gulpif(!config.dev, imagemin({
-            progressive: true, // 1
-            optimizationLevel: 3, // 2
-            svgoPlugins: [
-                { removeViewBox: false },               // 3a
-                { removeUselessStrokeAndFill: false },  // 3b
-                { removeEmptyAttrs: false }             // 3c
-            ]
-        })))
-        .pipe(gulp.dest(config.dest + '/app/images'));
-});
 
-gulp.task('images', ['images:kickstart','images:app']);
-
-// fonts
-gulp.task('fonts:kickstart', function() {
-    return gulp.src(config.src.fonts.kickstart)
-        .pipe(gulp.dest(config.dest + '/kickstart/fonts'));
-});
-
-gulp.task('fonts:app', function() {
-    return gulp.src(config.src.fonts.app)
-        .pipe(gulp.dest(config.dest + '/app/fonts'));
-});
-
-gulp.task('fonts', ['fonts:kickstart','fonts:app']);
-
-// extras
-gulp.task('favicon', function() {
-    return gulp.src('./src/favicon.ico')
-        .pipe(gulp.dest(config.dest));
-});
-
-// collate
-gulp.task('collate', function() {
+// compile patterns task
+gulp.task('compile', function () {
     var deferred = q.defer();
     var options = {
-            patterns: config.src.patterns,
-            dest: config.dest + '/kickstart/data/styleguide-data.json',
-            debug: false,
-            logErrors: true,
-            logVerbose: true
-        };
+        patterns: config.src.patterns,
+        docs: config.src.docs,
+        dest: config.dest.app,
+        logErrors: config.logging.logErrors,
+        logToFile: config.logging.writeToFile,
+        logVerbose: config.logging.verbose
+    };
 
-    collate(options, deferred.resolve);
+    kickstart(options, deferred.resolve);
 
     return deferred.promise;
 });
 
-gulp.task('build:patterns', function() {
-    var
-        deferred = q.defer(),
-        opts = {
-            data: config.dest + '/kickstart/data/styleguide-data.json',
-            template: true
-        };
+// gulp.task('styleguide', function() {
+//     styleguide({
+//         components: path.resolve(__dirname, 'src/app/patterns'),
+//         ext: 'html',
+//         data: path.resolve(__dirname, 'public/app/_data'),
+//         static: path.resolve(__dirname, 'public/app'),
+//         staticPath: '/public/app/assets',
+//         stylesheets:['styles/main.css'],
+//         scripts: ['scripts/main.js'],
+//         port: 3002
+//     });
+// });
 
-    compile(opts, deferred.resolve);
-
-    return deferred.promise;
+gulp.task('browserSync', ['nodemon'], function () {
+    //return browserSync(config.browserSync);
+    return browserSync.init(null, config.browserSync);
 });
 
-// build
-gulp.task('build:kickstart', function() {
+// nodemon task for styleguid app
+gulp.task('nodemon', function(done) {
+    var started = false;
 
-    var opts = {
-        data: config.dest + '/kickstart/data/styleguide-data.json',
-        template: false
-    };
-
-    return gulp.src(config.src.styleguide)
-        .pipe(compile(opts))
-        .pipe(gulp.dest(config.dest));
-});
-
-gulp.task('build:app', function() {
-    var opts = {
-        data: config.dest + '/kickstart/data/styleguide-data.json',
-        template: true
-    };
-
-    return gulp.src(['./src/app/templates/*.html', './src/app/pages/*.html'])
-        .pipe(compile(opts))
-        .pipe(gulp.dest(config.dest));
-});
-
-gulp.task('build', ['collate'], function() {
-    //gulp.start('build:kickstart', 'build:patterns');
-    gulp.start('build:patterns');
-});
-
-// server
-gulp.task('browser-sync', function() {
-    browserSync({
-        server: {
-            baseDir: config.dest
-        },
-        browsers: ['chrome'],
-        notify: false,
-        logPrefix: 'KICKSTART'
-    });
-});
-
-// watch
-gulp.task('watch', ['browser-sync'], function() {
-    gulp.watch('src/app/**/*.{html,md}', ['build',reload]);
-    gulp.watch('src/kickstart/assets/styles/**/*.{sass,scss}', ['styles:kickstart']);
-    gulp.watch('src/app/assets/styles/**/*.{sass,scss}', ['styles:app']);
-    gulp.watch('src/kickstart/assets/scripts/**/*.js', ['scripts:kickstart', reload]);
-    gulp.watch('src/app/assets/scripts/**/*.js', ['scripts:app', reload]);
-    gulp.watch(config.src.images.app, ['images:app', reload]);
-});
-
-// default build task
-gulp.task('default', ['clean'], function() {
-    var tasks = [
-        'styles',
-        'scripts',
-        'images',
-        'fonts',
-        'build'
-    ];
-
-    // build in sequence order
-    runSequence(tasks, function() {
-        if (!config.dev) {
-            gulp.start('watch');
+    plugins.nodemon({
+        script: 'app.js'
+    }).on('start', function() {
+        if (!started) {
+            done();
+            started = true;
         }
+    })
+});
+
+// watch task
+gulp.task('watch', function () {
+    plugins.watch(config.src.html, function () {
+        plugins.sequence('compile', function() {
+            bsreload();
+        });
+    });
+
+    plugins.watch('./src/styleguide/assets/styles/**/*.{sass,scss}', function () {
+        gulp.start('styles:styleguide')
+    });
+
+    plugins.watch(config.src.styles, function () {
+        gulp.start('styles:app')
+    });
+
+    plugins.watch('./src/styleguide/assets/scripts/**/*.js', function () {
+        gulp.start('scripts:styleguide')
+    });
+
+    plugins.watch(config.src.images, function () {
+        gulp.start('images:app')
     });
 });
 
+// test performance task
+gulp.task('test:performance', function () {
+    //TODO: write the performance tasks
+});
+
+// performance task entry point
+gulp.task('perf', ['test:performance']);
+
+// production build task
+gulp.task('build:production', ['clean'], function (cb) {
+    plugins.sequence(
+        ['fonts', 'images', 'styles', 'scripts'],
+        ['compile', 'copy:extras'],
+        done
+    );
+});
+
+//default task
+// gulp.task('default', ['clean'], function(done) {
+//     plugins.sequence(
+//         ['fonts', 'images', 'styles', 'scripts'],
+//         ['compile', 'copy:extras'],
+//         ['browserSync', 'watch'],
+//         'styleguide',
+//         done
+//     );
+// });
+gulp.task('default', ['clean'], function(done) {
+    plugins.sequence(
+        ['fonts', 'images', 'styles', 'scripts'],
+        ['compile', 'copy:extras'],
+        ['browserSync', 'watch'],
+        done
+    );
+});
 
 
 

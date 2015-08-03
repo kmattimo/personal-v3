@@ -1,0 +1,17 @@
+---
+notes: The primary navigation bar is used to provide the primary navigation for a site
+---
+
+<div class="nav-bar nav-bar--horizontal">
+
+  <h1 class="nav-bar__logo brand--small">
+
+    <a href="/" title="{{data.site.clientName}}">
+      {{data.site.clientName}}
+    </a>
+
+  </h1>
+
+  {{> modules/navigation classes="nav-bar__nav" }}
+
+</div>

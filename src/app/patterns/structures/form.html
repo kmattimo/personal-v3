@@ -1,0 +1,32 @@
+---
+notes: This is a form
+
+formTitle: Form Title
+fieldLabel: Field Label
+fieldName: My Textbox
+fieldPlaceholder: 'ex: Field 1'
+---
+
+<section class="form">
+
+    <header>
+
+        <h1>{{formTitle}}</h1>
+
+    </header>
+
+    <div>
+
+        <label class="db" for="{{fieldName}}">
+
+            <span class="db mbxs">{{fieldLabel}}</span>
+
+            <input class="input-txt" id="field-1" type="text" name="{{fieldName}}" placeholder="{{fieldPlaceholder}}"></input>
+
+        </label>
+
+        {{> components/buttons/default classes="button--submit"}}
+
+    </div>
+
+</section>

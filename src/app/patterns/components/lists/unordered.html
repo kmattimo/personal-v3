@@ -1,17 +1,11 @@
 ---
 notes: Use an unordered list when list item order does not matter
 ---
-
-{{#with unorderedList}}
-{{#if title}}<h2>{{title}}</h2>{{/if}}
-<ul>
-    {{#listItems}}
-        <li class="list-item">
+<ul class="unordered-list {{classes}}">
+    {{#each data.unordered.listItems}}
+        <li class="list__item">
             {{value}}
-            {{#if content}}
             {{{content}}}
-            {{/if}}
         </li>
-    {{/listItems}}
+    {{/each}}
 </ul>
-{{/with}}

@@ -1,24 +1,22 @@
 ---
-name: Home Template
-layout: default
 notes: This is the home page template
+
+pageTitle: Home Page Template
 ---
 
-<!-- snippet:html home-template -->
 <main id="main" rel="main">
 
-    <h1>Home Template</h1>
+    <h1>{{pageTitle}}</h1>
 
-    {{> component-body-copy }}
+    {{> components/paragraph }}
 
     <div>
 
-        {{> module-button-bar }}
+        {{> modules/button-bar }}
 
-        {{> module-accordion listItems=accordion.listItems}}
+        {{> modules/accordion listItems=accordion.listItems}}
 
     </div>
 
 </main>
-<!-- endsnippet -->
 

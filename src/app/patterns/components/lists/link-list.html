@@ -1,0 +1,10 @@
+---
+notes: This type of list is used when you have a list of links
+---
+<ul class="link-list {{classes}}">
+    {{#each data.linkList.listItems}}
+        <li class="link-list__item">
+            <a class="link-list__link" href="#">{{value}}</a>
+        </li>
+    {{/each}}
+</ul>

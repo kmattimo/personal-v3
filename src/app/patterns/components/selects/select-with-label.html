@@ -1,0 +1,21 @@
+---
+notes: Selects should have a label
+
+fieldLabel: Select an option
+fieldName: my-select
+---
+
+<label for="{{fieldName}}">
+  {{fieldLabel}}
+
+  <select class="select" name="{{fieldName}}">
+
+      <option selected>Option 1</option>
+      <option>Option 2</option>
+      <option>Option 3</option>
+      <option>Option 4</option>
+      <option>Option 5</option>
+
+  </select>
+
+</label>
