@@ -1,13 +1,11 @@
 var path = require('path');
 // source directories
-var srcDir = './src';
-var srcAppDir = srcDir + '/app';
-var srcAssetsDir = srcAppDir + '/assets';
+var srcDir = 'src';
+var srcAssetsDir = srcDir + '/assets';
 
 // destination directories
-var publicDir = './public';
-var publicAppDir = publicDir + '/app';
-var publicAssetsDir = publicAppDir + '/assets';
+var destDir = 'public';
+var destAssetsDir = destDir + '/assets';
 
 module.exports = {
 
@@ -20,26 +18,24 @@ module.exports = {
   },
 
   src: {
-    app: srcAppDir,
-    data: srcAppDir + '/_data/**/*.{json,yaml}',
+    data: srcDir + '/data/**/*.{json,yaml}',
     html: srcDir + '/**/*.{hbs,html}',
+    docs: srcDir + '/docs/**/*.{md,markdown}',
+    pages: srcDir + '/pages/**/*.{hbs,html}',
+    includes: srcDir + '/includes/**/*.{hbs,html}',
     scripts: srcAssetsDir + '/scripts/**/*.{js,jsx}',
     styles: srcAssetsDir + '/styles/**/*.{sass,scss}',
     images: srcAssetsDir + '/images/**/*.{gif,jpg,jpeg,png,svg,tiff}',
-    fonts: srcAssetsDir + '/fonts/**/*',
-    docs: srcAppDir + '/documentation/**/*.{md,markdown}',
-    views: [srcAppDir + '/views/**/*', '!' + srcAppDir + '/views/+(layouts)/**'],
-    patterns: srcAppDir + '/patterns/**/*.{html,hbs}'
+    fonts: srcAssetsDir + '/fonts/**/*'
   },
 
   dest: {
-    base: publicDir,
-    app: publicAppDir,
-    data: publicAppDir + '/_data/context-data.json',
-    scripts: publicAssetsDir + '/scripts',
-    styles: publicAssetsDir + '/styles',
-    images: publicAssetsDir + '/images',
-    fonts: publicAssetsDir + '/fonts'
+    base: destDir,
+    data: destDir + '/data/context-data.json',
+    scripts: destAssetsDir + '/scripts',
+    styles: destAssetsDir + '/styles',
+    images: destAssetsDir + '/images',
+    fonts: destAssetsDir + '/fonts'
   },
 
   images: {
@@ -77,39 +73,32 @@ module.exports = {
   scriptBundles: [
     {
       entries: srcAssetsDir + '/scripts/main.js',
-      dest: publicAssetsDir + '/scripts',
+      dest: destAssetsDir + '/scripts',
       outputName: 'main.js',
       require: ['jquery'],
       debug: true
     }
   ],
-  // browserSync: {
-  //   server: {
-  //     baseDir: [
-  //       publicAppDir
-  //     ]
-  //   },
-  //   startPath: "home.html",
-  //   snippetOptions: {
-  //     ignorePaths: [
-  //       "/styleguide/styleguide.html",
-  //       "/styleguide/pattern-group.html"
-  //     ]
-  //   },
-  //   browsers: ['google chrome'],
-  //   notify: true,
-  //   logPrefix: 'SERVER'
-  // }
-
   browserSync: {
-    proxy: 'http://localhost:5000',
-    files: ['public/app/**/*.*'],
-    port: 7000,
-    browsers: ['google chrome'],
-    logPrefix: 'SERVER',
-    snippetOptions: {
-      blacklist: ["all.html"]
+    server: {
+      baseDir: [
+        destDir,
+        './styleguide'
+      ],
+      routes: {
+        '/styleguide': destDir + '/styleguide/index.html'
+      }
     },
+    startPath: "home.html",
+    snippetOptions: {
+      ignorePaths: [
+        "./styleguide/styleguide.html",
+        "./styleguide/pattern-group.html",
+        "./styleguide/components.html"
+      ]
+    },
+    browsers: ['google chrome'],
+    notify: true,
+    logPrefix: 'SERVER'
   }
-
 };

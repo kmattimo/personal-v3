@@ -2,6 +2,7 @@
 
 // node modules
 var _ = require('lodash');
+var assemble = require('assemble');
 var browserify  = require("browserify");
 var browserSync = require("browser-sync");
 var bsreload = browserSync.reload;
@@ -19,8 +20,8 @@ var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
 
 // kickstart modules
-var kickstart = require('kickstart-compiler');
-var styleguide = require('kickstart-styleguide');
+//var kickstart = require('kickstart-compiler');
+var styleguide = require('kickstart-assemble');
 
 // user project configuration
 var config = require('./config.js');
@@ -111,79 +112,72 @@ gulp.task('fonts', function () {
 });
 
 // copy extra files task
-gulp.task('copy:extras', function () {
-    return gulp.src('./src/app/extras/**/*')
-        .pipe(gulp.dest(config.dest.app));
+gulp.task('copy:extras', function (done) {
+    return gulp.src('./src/*.{ico,txt}')
+        .pipe(gulp.dest(config.dest.base));
 });
 
+// assemble templates
+assemble.task('templates', function(done) {
+  function loadData() {
+    assemble.data(config.src.data);
+    assemble.data(assemble.plasma(['config.js','package.json'], { namespace: function (fp) {
+        var name = path.basename(fp, path.extname(fp));
+        console.log('assemble data name: ', name);
+        if ( name === 'package') return 'pkg';
+        return name;
+    }}));
+    assemble.data(assemble.process(assemble.data()));
+  }
 
-// compile patterns task
-gulp.task('compile', function () {
-    var deferred = q.defer();
-    var options = {
-        patterns: config.src.patterns,
-        docs: config.src.docs,
-        dest: config.dest.app,
-        logErrors: config.logging.logErrors,
-        logToFile: config.logging.writeToFile,
-        logVerbose: config.logging.verbose
-    };
+  //assemble.enable('minimal config');
+  assemble.engine('html', require('engine-handlebars'));
+  assemble.option('production', false);
+  assemble.option('layout', 'default-layout');
+  assemble.layouts('src/layouts/*.html');
+  assemble.partials('src/includes/**/*.html');
+  loadData();
 
-    kickstart(options, deferred.resolve);
-
-    return deferred.promise;
+  return assemble.src('src/pages/**/*.html')
+    .pipe(plugins.extname())
+    .pipe(assemble.dest(config.dest.base));
 });
 
-// gulp.task('styleguide', function() {
-//     styleguide({
-//         components: path.resolve(__dirname, 'src/app/patterns'),
-//         ext: 'html',
-//         data: path.resolve(__dirname, 'public/app/_data'),
-//         static: path.resolve(__dirname, 'public/app'),
-//         staticPath: '/public/app/assets',
-//         stylesheets:['styles/main.css'],
-//         scripts: ['scripts/main.js'],
-//         port: 3002
-//     });
-// });
+gulp.task('styleguide', function(done) {
+  var base = 'src/includes/patterns';
+  var opts = {
+    patterns: {
+        components: [base + '/components/**/*.{hbs,html}'],
+        modules: [base + '/modules/**/*.{hbs,html}'],
+        strutures: [base + '/structures/**/*.{hbs,html}'],
+        templates: [base + '/templates/**/*.{hbs,html}']
+    },
+    src: base + '/**/*.{hbs,html}',
+    dest: config.dest.base + '/styleguide'
+  };
 
-gulp.task('browserSync', ['nodemon'], function () {
-    //return browserSync(config.browserSync);
-    return browserSync.init(null, config.browserSync);
+  styleguide(opts, done);
 });
 
-// nodemon task for styleguid app
-gulp.task('nodemon', function(done) {
-    var started = false;
+gulp.task('compile', function(done) {
+    // var tasks = ['templates', 'styleguide'];
+    // assemble.run(tasks, done);
+    assemble.run('templates', done);
+});
 
-    plugins.nodemon({
-        script: 'app.js'
-    }).on('start', function() {
-        if (!started) {
-            done();
-            started = true;
-        }
-    })
+gulp.task('browserSync', function () {
+    return browserSync(config.browserSync);
 });
 
 // watch task
 gulp.task('watch', function () {
-    plugins.watch(config.src.html, function () {
-        plugins.sequence('compile', function() {
-            bsreload();
-        });
-    });
-
-    plugins.watch('./src/styleguide/assets/styles/**/*.{sass,scss}', function () {
-        gulp.start('styles:styleguide')
-    });
-
+    // plugins.watch(config.src.html, function () {
+    //     plugins.sequence('compile', function() {
+    //         bsreload();
+    //     });
+    // });
     plugins.watch(config.src.styles, function () {
         gulp.start('styles:app')
-    });
-
-    plugins.watch('./src/styleguide/assets/scripts/**/*.js', function () {
-        gulp.start('scripts:styleguide')
     });
 
     plugins.watch(config.src.images, function () {
@@ -209,19 +203,10 @@ gulp.task('build:production', ['clean'], function (cb) {
 });
 
 //default task
-// gulp.task('default', ['clean'], function(done) {
-//     plugins.sequence(
-//         ['fonts', 'images', 'styles', 'scripts'],
-//         ['compile', 'copy:extras'],
-//         ['browserSync', 'watch'],
-//         'styleguide',
-//         done
-//     );
-// });
 gulp.task('default', ['clean'], function(done) {
     plugins.sequence(
-        ['fonts', 'images', 'styles', 'scripts'],
-        ['compile', 'copy:extras'],
+        ['fonts', 'images', 'styles', 'scripts', 'copy:extras'],
+        ['compile', 'styleguide'],
         ['browserSync', 'watch'],
         done
     );
