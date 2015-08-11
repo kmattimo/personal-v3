@@ -187,7 +187,7 @@ gulp.task('build:production', ['clean'], function (cb) {
     );
 });
 
-gulp.task('default', ['clean'], function(done) {
+gulp.task('build', ['clean'], function(done) {
     plugins.sequence(
         ['fonts', 'images', 'styles', 'scripts'],
         ['compile', 'copy:extras'],
@@ -195,6 +195,8 @@ gulp.task('default', ['clean'], function(done) {
         done
     );
 });
+
+gulp.task('default', ['build']);
 
 
 
