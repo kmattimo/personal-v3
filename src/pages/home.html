@@ -4,9 +4,6 @@ layout: default-layout
 <h1 class="brand"><span class="brand__title">{{ site.title }}</span>
   <img class="brand__logo" src="{{ site.logo }}" alt="{{ site.title }}" />
 </h1>
-{{> checkbox }}
-
-{{> headings }}
 
 <div class="page">
 
@@ -14,9 +11,14 @@ layout: default-layout
 
     <article class="article">
 
-      {{> paragraph }}
+    {{> headings }}
+
+    {{> checkbox home.checkbox}}
+
+      {{> paragraph home.paragraph}}
 
       {{> textbox }}
+
 
     </article>
 

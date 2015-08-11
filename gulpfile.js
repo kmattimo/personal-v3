@@ -1,6 +1,8 @@
 'use strict';
+//node modules
+var path = require('path');
 
-// node modules
+// node_modules modules
 var _ = require('lodash');
 var assemble = require('assemble');
 var browserify  = require("browserify");
@@ -8,9 +10,7 @@ var browserSync = require("browser-sync");
 var bsreload = browserSync.reload;
 var buffer = require('vinyl-buffer');
 var del = require('del');
-var fs = require('fs-extra');
 var mergeStream = require('merge-stream');
-var path = require('path');
 var q = require('q');
 var source = require('vinyl-source-stream');
 var watchify = require('watchify');
@@ -20,8 +20,7 @@ var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
 
 // kickstart modules
-//var kickstart = require('kickstart-compiler');
-var styleguide = require('kickstart-assemble');
+var assemble = require('kickstart-assemble');
 
 // user project configuration
 var config = require('./config.js');
@@ -117,35 +116,25 @@ gulp.task('copy:extras', function (done) {
         .pipe(gulp.dest(config.dest.base));
 });
 
-// assemble templates
-assemble.task('templates', function(done) {
-  function loadData() {
-    assemble.data(config.src.data);
-    assemble.data(assemble.plasma(['config.js','package.json'], { namespace: function (fp) {
-        var name = path.basename(fp, path.extname(fp));
-        console.log('assemble data name: ', name);
-        if ( name === 'package') return 'pkg';
-        return name;
-    }}));
-    assemble.data(assemble.process(assemble.data()));
-  }
+gulp.task('templates', function(done) {
+    var opts = {
+        assets: config.dest.base + '/assets',
+        data: [config.src.data],
+        production: false,
+        layout: 'default-layout',
+        layouts: 'src/layouts/*.html',
+        partials: 'src/includes/**/*.html',
+        pages: 'src/pages/**/*.html',
+        dest: config.dest.base
+    };
 
-  //assemble.enable('minimal config');
-  assemble.engine('html', require('engine-handlebars'));
-  assemble.option('production', false);
-  assemble.option('layout', 'default-layout');
-  assemble.layouts('src/layouts/*.html');
-  assemble.partials('src/includes/**/*.html');
-  loadData();
-
-  return assemble.src('src/pages/**/*.html')
-    .pipe(plugins.extname())
-    .pipe(assemble.dest(config.dest.base));
+    assemble.templates(opts, done);
 });
 
 gulp.task('styleguide', function(done) {
   var base = 'src/includes/patterns';
   var opts = {
+    data: [config.src.data],
     patterns: {
         components: [base + '/components/**/*.{hbs,html}'],
         modules: [base + '/modules/**/*.{hbs,html}'],
@@ -156,13 +145,8 @@ gulp.task('styleguide', function(done) {
     dest: config.dest.base + '/styleguide'
   };
 
-  styleguide(opts, done);
-});
-
-gulp.task('compile', function(done) {
-    // var tasks = ['templates', 'styleguide'];
-    // assemble.run(tasks, done);
-    assemble.run('templates', done);
+  assemble.styleguide(opts);
+  done();
 });
 
 gulp.task('browserSync', function () {
@@ -193,6 +177,9 @@ gulp.task('test:performance', function () {
 // performance task entry point
 gulp.task('perf', ['test:performance']);
 
+// compile task
+gulp.task('compile', ['templates', 'styleguide']);
+
 // production build task
 gulp.task('build:production', ['clean'], function (cb) {
     plugins.sequence(
@@ -202,11 +189,10 @@ gulp.task('build:production', ['clean'], function (cb) {
     );
 });
 
-//default task
 gulp.task('default', ['clean'], function(done) {
     plugins.sequence(
-        ['fonts', 'images', 'styles', 'scripts', 'copy:extras'],
-        ['compile', 'styleguide'],
+        ['fonts', 'images', 'styles', 'scripts'],
+        ['compile', 'copy:extras'],
         ['browserSync', 'watch'],
         done
     );
