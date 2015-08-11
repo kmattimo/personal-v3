@@ -4,11 +4,9 @@ var path = require('path');
 
 // node_modules modules
 var _ = require('lodash');
-var assemble = require('assemble');
 var browserify  = require("browserify");
 var browserSync = require("browser-sync");
 var bsreload = browserSync.reload;
-var buffer = require('vinyl-buffer');
 var del = require('del');
 var mergeStream = require('merge-stream');
 var q = require('q');
