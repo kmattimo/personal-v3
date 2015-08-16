@@ -114,14 +114,21 @@ gulp.task('copy:extras', function (done) {
         .pipe(gulp.dest(config.dest.base));
 });
 
-gulp.task('templates', function(done) {
+gulp.task('compile:templates', function(done) {
     var opts = {
         assets: config.dest.base + '/assets',
         data: [config.src.data],
         production: false,
         layout: 'default-layout',
         layouts: 'src/layouts/*.html',
-        partials: 'src/includes/**/*.html',
+        partials: {
+            common: ['src/includes/common/**/*.{hbs,html}'],
+            component: ['src/includes/patterns/components/**/*.{hbs,html}'],
+            module: ['src/includes/patterns/modules/**/*.{hbs,html}'],
+            structure: ['src/includes/patterns/structures/**/*.{hbs,html}'],
+            templates: ['src/includes/patterns/templates/**/*.{hbs,html}']
+        },
+        //partials: 'src/includes/**/*.html',
         pages: 'src/pages/**/*.html',
         dest: config.dest.base
     };
@@ -129,7 +136,7 @@ gulp.task('templates', function(done) {
     assemble.templates(opts, done);
 });
 
-gulp.task('styleguide', function(done) {
+gulp.task('compile:styleguide', function(done) {
   var base = 'src/includes/patterns';
   var opts = {
     data: [config.src.data],
@@ -143,8 +150,7 @@ gulp.task('styleguide', function(done) {
     dest: config.dest.base + '/styleguide'
   };
 
-  assemble.styleguide(opts);
-  done();
+  assemble.styleguide(opts, done);
 });
 
 gulp.task('browserSync', function () {
@@ -176,7 +182,7 @@ gulp.task('test:performance', function () {
 gulp.task('perf', ['test:performance']);
 
 // compile task
-gulp.task('compile', ['templates', 'styleguide']);
+gulp.task('compile', ['compile:templates', 'compile:styleguide']);
 
 // production build task
 gulp.task('build:production', ['clean'], function (cb) {
