@@ -92,9 +92,10 @@ module.exports = {
     startPath: "home.html",
     snippetOptions: {
       ignorePaths: [
-        "./styleguide/styleguide.html",
-        "./styleguide/pattern-group.html",
-        "./styleguide/components.html"
+        "/styleguide/all.html",
+        "/styleguide/index.html",
+        "/styleguide/styleguide.html",
+        "/styleguide/components.html",
       ]
     },
     browsers: ['google chrome'],
