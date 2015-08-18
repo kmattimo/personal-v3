@@ -29,7 +29,6 @@
     "npm": ">=2.0.0"
   },
   "dependencies": {
-    "assemble": "^0.6.0-beta.5",
     "kickstart-assemble": "onenorth/kickstart-assemble#master"
   },
   "devDependencies": {
