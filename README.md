@@ -8,7 +8,7 @@ The [assemble](https://github.com/onenorth/kickstart/tree/assemble) branch will 
 ##Features
 * Command Line Interface
 * Scaffold new projects or work with existing projects
-* Easy templating with handlebars
+* Easy templating with Handlebars
 * Sass compilation, optimization and minification
 * JavaScript bundling with Browserify, minification
 * JavaScript and CSS linting
