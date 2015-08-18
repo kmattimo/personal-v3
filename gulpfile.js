@@ -139,14 +139,15 @@ gulp.task('compile:templates', function(done) {
 gulp.task('compile:styleguide', function(done) {
   var base = 'src/includes/patterns';
   var opts = {
+    assets: config.dest.destAssetsDir,
     data: [config.src.data],
     patterns: {
-        components: [base + '/components/**/*.{hbs,html}'],
-        modules: [base + '/modules/**/*.{hbs,html}'],
-        strutures: [base + '/structures/**/*.{hbs,html}'],
+        component: [base + '/components/**/*.{hbs,html}'],
+        module: [base + '/modules/**/*.{hbs,html}'],
+        struture: [base + '/structures/**/*.{hbs,html}'],
         templates: [base + '/templates/**/*.{hbs,html}']
     },
-    src: base + '/**/*.{hbs,html}',
+    //src: base + '/**/*.{hbs,html}',
     dest: config.dest.base + '/styleguide'
   };
 

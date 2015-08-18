@@ -32,6 +32,7 @@ module.exports = {
   dest: {
     base: destDir,
     data: destDir + '/data/context-data.json',
+    assets: destAssetsDir,
     scripts: destAssetsDir + '/scripts',
     styles: destAssetsDir + '/styles',
     images: destAssetsDir + '/images',
@@ -92,10 +93,8 @@ module.exports = {
     startPath: "home.html",
     snippetOptions: {
       ignorePaths: [
-        "/styleguide/all.html",
-        "/styleguide/index.html",
-        "/styleguide/styleguide.html",
-        "/styleguide/components.html",
+        "styleguide",
+        "styleguide/*.html"
       ]
     },
     browsers: ['google chrome'],
