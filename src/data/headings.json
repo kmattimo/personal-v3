@@ -1,9 +1,9 @@
 {
-  "heading1": "Heading 1 title",
-  "heading2": "Heading 2 title",
-  "heading3": "Heading 3 title",
-  "heading4": "Heading 4 title",
-  "heading5": "Heading 5 title",
-  "heading6": "Heading 6 title"
-
+  "size_1": "Heading 1 Size",
+  "size_2": "Heading 2 Size",
+  "size_3": "Heading 3 Size",
+  "size_4": "Heading 4 Size",
+  "size_5": "Heading 5 Size",
+  "size_6": "Heading 6 Size",
+  "long_heading": "This is a really, really, really, really long header title that will probably wrap to the next line"
 }

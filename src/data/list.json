@@ -1,0 +1,20 @@
+{
+  "unordered": {
+    "items": [
+      { "value": "List Item 1" },
+      { "value": "List Item 2" },
+      { "value": "List Item 3" },
+      { "value": "List Item 4" },
+      { "value": "List Item 5" }
+    ]
+  },
+  "ordered": {
+    "items": [
+      { "value": "List Item 1" },
+      { "value": "List Item 2" },
+      { "value": "List Item 3" },
+      { "value": "List Item 4" },
+      { "value": "List Item 5" }
+    ]
+  }
+}

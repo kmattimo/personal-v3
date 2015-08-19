@@ -1,0 +1,28 @@
+{
+  "textbox": {
+    "label": "Textbox",
+    "name": "input-text",
+    "title": "Textbox",
+    "placeholder": "Type something here..."
+  },
+  "checkbox": {
+    "label": "Checkbox",
+    "name": "input-checkbox",
+    "title": "Checkbox",
+    "value": "[some value]",
+    "checked": true,
+    "unchecked": true,
+    "special": {
+      "label": "Special Checkbox",
+      "title": "Special Checkbox"
+    }
+  },
+  "radio-button": {
+    "label": "Radio Button",
+    "name": "input-radio",
+    "title": "Radio Button",
+    "value": "[some value]",
+    "checked": true,
+    "unchecked": true
+  }
+}
