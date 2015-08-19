@@ -1,11 +1,11 @@
 var path = require('path');
 // source directories
 var srcDir = 'src';
-var srcAssetsDir = srcDir + '/assets';
+var srcAssetsDir = srcDir + '/public';
 
 // destination directories
-var destDir = 'public';
-var destAssetsDir = destDir + '/assets';
+var destDir = 'site';
+var destAssetsDir = destDir + '/public';
 
 module.exports = {
 
@@ -23,7 +23,7 @@ module.exports = {
     docs: srcDir + '/docs/**/*.{md,markdown}',
     pages: srcDir + '/pages/**/*.{hbs,html}',
     includes: srcDir + '/includes/**/*.{hbs,html}',
-    scripts: srcAssetsDir + '/scripts/**/*.{js,jsx}',
+    scripts: srcAssetsDir + '/js/**/*.{js,jsx}',
     styles: srcAssetsDir + '/styles/**/*.{sass,scss}',
     images: srcAssetsDir + '/images/**/*.{gif,jpg,jpeg,png,svg,tiff}',
     fonts: srcAssetsDir + '/fonts/**/*'
@@ -31,9 +31,8 @@ module.exports = {
 
   dest: {
     base: destDir,
-    data: destDir + '/data/context-data.json',
     assets: destAssetsDir,
-    scripts: destAssetsDir + '/scripts',
+    scripts: destAssetsDir + '/js',
     styles: destAssetsDir + '/styles',
     images: destAssetsDir + '/images',
     fonts: destAssetsDir + '/fonts'
@@ -67,14 +66,14 @@ module.exports = {
     },
     settings: {
       indentedSyntax: false, // true enables .sass indented syntax
-      imagesPath: 'assets/images' // used by the image-url helper
+      imagesPath: 'public/images' // used by the image-url helper
     }
   },
 
   scriptBundles: [
     {
-      entries: srcAssetsDir + '/scripts/main.js',
-      dest: destAssetsDir + '/scripts',
+      entries: srcAssetsDir + '/js/main.js',
+      dest: destAssetsDir + '/js',
       outputName: 'main.js',
       require: ['jquery'],
       debug: true
@@ -82,20 +81,14 @@ module.exports = {
   ],
   browserSync: {
     server: {
-      baseDir: [
-        destDir,
-        './styleguide'
-      ],
+      baseDir: [destDir, 'styleguide'],
       routes: {
-        '/styleguide': destDir + '/styleguide/index.html'
+        '/styleguide': 'styleguide'
       }
     },
-    startPath: "home.html",
+    startPath: 'home.html',
     snippetOptions: {
-      ignorePaths: [
-        "styleguide",
-        "styleguide/*.html"
-      ]
+      ignorePaths: ['styleguide', 'styleguide/*.html']
     },
     browsers: ['google chrome'],
     notify: true,

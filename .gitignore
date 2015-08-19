@@ -28,8 +28,9 @@ node_modules
 # Toolkit specific files and folders
 dist
 .sass-cache
-tempus.sketch
 *.sketch
 *.sublime-project
 *.sublime-workspace
 [Pp]ublic
+[Ss]ite
+[Ss]tyleguide

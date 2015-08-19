@@ -43,6 +43,9 @@ gulp.task('styles', function () {
     return gulp.src(config.src.styles)
         .pipe(plugins.plumber({ errorHandler: onError }))
         .pipe(plugins.sass(config.sass.settings))
+        .pipe(plugins.cssUrlAdjuster({
+            prepend: config.dest.images
+        }))
         .pipe(plugins.if(!config.dev, plugins.combineMediaQueries()))
         .pipe(plugins.autoprefixer(config.sass.autoprefixer))
         .pipe(plugins.if(!config.dev, plugins.csso()))
@@ -110,26 +113,26 @@ gulp.task('fonts', function () {
 
 // copy extra files task
 gulp.task('copy:extras', function (done) {
-    return gulp.src('./src/*.{ico,txt}')
+    return gulp.src('./src/public/*.{ico,txt}')
         .pipe(gulp.dest(config.dest.base));
 });
 
 gulp.task('compile:templates', function(done) {
     var opts = {
-        assets: config.dest.base + '/assets',
-        data: [config.src.data],
+        assets: config.dest.assets,
+        data: config.src.data,
         production: false,
         layout: 'default-layout',
-        layouts: 'src/layouts/*.html',
+        layouts: 'src/templates/views/layouts/*.html',
         partials: {
-            common: ['src/includes/common/**/*.{hbs,html}'],
-            component: ['src/includes/patterns/components/**/*.{hbs,html}'],
-            module: ['src/includes/patterns/modules/**/*.{hbs,html}'],
-            structure: ['src/includes/patterns/structures/**/*.{hbs,html}'],
-            templates: ['src/includes/patterns/templates/**/*.{hbs,html}']
+            common: ['src/templates/views/partials/layout/**/*.{hbs,html}'],
+            component: ['src/templates/views/partials/components/**/*.{hbs,html}'],
+            module: ['src/templates/views/partials/modules/**/*.{hbs,html}'],
+            structure: ['src/templates/views/partials/structures/**/*.{hbs,html}'],
+            templates: ['src/templates/views/partials/templates/**/*.{hbs,html}']
         },
-        //partials: 'src/includes/**/*.html',
-        pages: 'src/pages/**/*.html',
+        //partials: 'src/templates/views/partials/**/*.html',
+        pages: 'src/templates/views/*.html',
         dest: config.dest.base
     };
 
@@ -137,18 +140,17 @@ gulp.task('compile:templates', function(done) {
 });
 
 gulp.task('compile:styleguide', function(done) {
-  var base = 'src/includes/patterns';
   var opts = {
-    assets: config.dest.destAssetsDir,
-    data: [config.src.data],
+    assetPath: '/public', // relative to site root directory (not styleguide)
+    data: config.src.data,
     patterns: {
-        component: [base + '/components/**/*.{hbs,html}'],
-        module: [base + '/modules/**/*.{hbs,html}'],
-        struture: [base + '/structures/**/*.{hbs,html}'],
-        templates: [base + '/templates/**/*.{hbs,html}']
+        component: ['src/templates/views/partials/components/**/*.{hbs,html}'],
+        module: ['src/templates/views/partials/modules/**/*.{hbs,html}'],
+        struture: ['src/templates/views/partials/structures/**/*.{hbs,html}'],
+        templates: ['src/templates/views/partials/templates/**/*.{hbs,html}']
     },
-    //src: base + '/**/*.{hbs,html}',
-    dest: config.dest.base + '/styleguide'
+    pages: 'src/templates/views/*.{hbs,html}',
+    dest: 'styleguide'
   };
 
   assemble.styleguide(opts, done);
