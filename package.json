@@ -4,12 +4,7 @@
   "description": "A rapid-prototyping web project toolkit plus living styleguide",
   "homepage": "https://github.com/onenorth/kickstart",
   "author": "One North Interactive",
-  "contributors": [
-    {
-      "name": "Chris Wigley",
-      "email": "cwigley@onenorth.com"
-    }
-  ],
+  "readme": "README.md",
   "keywords": [
     "toolkit",
     "styleguide",
@@ -58,9 +53,6 @@
     "q": "^1.4.1",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.3.0"
-  },
-  "optionalDependencies": {
-    "browser-sync": "^2.8.0 --msvs_version=2013"
   },
   "repository": {
     "type": "git",
