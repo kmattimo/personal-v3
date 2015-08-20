@@ -143,10 +143,11 @@ gulp.task('compile:styleguide', function(done) {
   var opts = {
     assetPath: '/public', // relative to site root directory (not styleguide)
     data: config.src.data,
-    patterns: {
-        component: ['src/templates/views/partials/components/**/*.{hbs,html}'],
-        module: ['src/templates/views/partials/modules/**/*.{hbs,html}'],
-        struture: ['src/templates/views/partials/structures/**/*.{hbs,html}'],
+    patterns: ['components', 'modules', 'structures', 'templates'],
+    partials: {
+        components: ['src/templates/views/partials/components/**/*.{hbs,html}'],
+        modules: ['src/templates/views/partials/modules/**/*.{hbs,html}'],
+        structures: ['src/templates/views/partials/structures/**/*.{hbs,html}'],
         templates: ['src/templates/views/partials/templates/**/*.{hbs,html}']
     },
     pages: 'src/templates/views/*.{hbs,html}',
