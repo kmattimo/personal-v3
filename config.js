@@ -18,13 +18,12 @@ module.exports = {
   },
 
   src: {
-    data: srcDir + '/data/**/*.{json,yaml}',
-    html: srcDir + '/**/*.{hbs,html}',
     docs: srcDir + '/docs/**/*.{md,markdown}',
-    pages: srcDir + '/pages/**/*.{hbs,html}',
-    includes: srcDir + '/includes/**/*.{hbs,html}',
+    pages: srcDir + '/templates/views/*.{hbs,html}',
+    includes: srcDir + '/templates/views/partials/**/*.{hbs,html}',
+    data: srcAssetsDir + '/data/**/*.{json,yaml}',
     scripts: srcAssetsDir + '/js/**/*.{js,jsx}',
-    styles: srcAssetsDir + '/styles/**/*.{sass,scss}',
+    styles: srcAssetsDir + '/scss/**/*.{sass,scss}',
     images: srcAssetsDir + '/images/**/*.{gif,jpg,jpeg,png,svg,tiff}',
     fonts: srcAssetsDir + '/fonts/**/*'
   },
@@ -33,7 +32,7 @@ module.exports = {
     base: destDir,
     assets: destAssetsDir,
     scripts: destAssetsDir + '/js',
-    styles: destAssetsDir + '/styles',
+    styles: destAssetsDir + '/css',
     images: destAssetsDir + '/images',
     fonts: destAssetsDir + '/fonts'
   },
