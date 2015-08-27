@@ -1,0 +1,11 @@
+{
+  "title": "Kickstart Template Site",
+  "logo": "/images/onenorth_logo.png",
+  "description": "[Your site description should be here]",
+  "copyright": "Copyright ©2015 Client Name",
+  "links": {
+    "facebook": "",
+    "twitter": "",
+    "youtube": ""
+  }
+}

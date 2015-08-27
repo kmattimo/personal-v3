@@ -1,0 +1,38 @@
+$max-width: 75em; // 1200px / 16px
+
+$a-tags: 'a, a:active, a:hover';
+$a-tags-hover: 'a:active, a:hover';
+
+#{$a-tags} {
+    color: map-get($colors, lightblue);
+    text-decoration: none;
+}
+
+#{$a-tags-hover} {
+    color: mix(map-get($colors, lightblue), map-get($colors, dark), 95%);
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    max-width: $max-width;
+    margin: auto;
+    line-height: 1.4;
+}
+
+p {
+    margin-bottom: $default-spacing;
+    margin-top: 0;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+[role="main"] {
+    padding: 1em;
+    overflow: hidden;
+}

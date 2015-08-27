@@ -25,12 +25,13 @@ node_modules
 # Users Environment Variables
 .lock-wscript
 
-# Toolkit specific files and folders
-dist
+# project-specific files and folders
+[Dd]ist
+[Bb]build
+[Ss]ite
+[Ss]tyleguide
 .sass-cache
 *.sketch
 *.sublime-project
 *.sublime-workspace
-[Pp]ublic
-[Ss]ite
-[Ss]tyleguide
+
