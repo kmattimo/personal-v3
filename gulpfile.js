@@ -34,7 +34,8 @@ var onError = function (err, cb) {
 // clean task
 gulp.task('clean', function (cb) {
     del([
-        config.dest.base
+        config.dest.base,
+        'styleguide'
     ], cb);
 });
 
@@ -118,7 +119,7 @@ gulp.task('copy:extras', function (done) {
 });
 
 gulp.task('compile:templates', function(done) {
-    var opts = {
+    var options = {
         assets: config.dest.assets,
         data: config.src.data,
         production: false,
@@ -126,9 +127,9 @@ gulp.task('compile:templates', function(done) {
         layouts: 'src/templates/views/layouts/*.html',
         partials: {
             common: ['src/templates/views/partials/layout/**/*.{hbs,html}'],
-            component: ['src/templates/views/partials/components/**/*.{hbs,html}'],
-            module: ['src/templates/views/partials/modules/**/*.{hbs,html}'],
-            structure: ['src/templates/views/partials/structures/**/*.{hbs,html}'],
+            components: ['src/templates/views/partials/components/**/*.{hbs,html}'],
+            modules: ['src/templates/views/partials/modules/**/*.{hbs,html}'],
+            structures: ['src/templates/views/partials/structures/**/*.{hbs,html}'],
             templates: ['src/templates/views/partials/templates/**/*.{hbs,html}']
         },
         //partials: 'src/templates/views/partials/**/*.html',
@@ -136,25 +137,25 @@ gulp.task('compile:templates', function(done) {
         dest: config.dest.base
     };
 
-    assemble.templates(opts, done);
+    assemble.templates(options, done);
 });
 
 gulp.task('compile:styleguide', function(done) {
-  var opts = {
+  var options = {
     assetPath: '/public', // relative to site root directory (not styleguide)
     data: config.src.data,
-    patterns: ['components', 'modules', 'structures', 'templates'],
-    partials: {
-        components: ['src/templates/views/partials/components/**/*.{hbs,html}'],
-        modules: ['src/templates/views/partials/modules/**/*.{hbs,html}'],
-        structures: ['src/templates/views/partials/structures/**/*.{hbs,html}'],
-        templates: ['src/templates/views/partials/templates/**/*.{hbs,html}']
+    // patterns: 'src/templates/views/partials/**/*.html',
+    patterns: {
+        component: 'src/templates/views/partials/components/**/*.{hbs,html}',
+        module: 'src/templates/views/partials/modules/**/*.{hbs,html}',
+        structure: 'src/templates/views/partials/structures/**/*.{hbs,html}',
+        template: 'src/templates/views/partials/templates/**/*.{hbs,html}'
     },
     pages: 'src/templates/views/*.{hbs,html}',
     dest: 'styleguide'
   };
 
-  assemble.styleguide(opts, done);
+  assemble.styleguide(options, done);
 });
 
 gulp.task('browserSync', function () {
@@ -185,22 +186,20 @@ gulp.task('test:performance', function () {
 // performance task entry point
 gulp.task('perf', ['test:performance']);
 
-// compile task
-gulp.task('compile', ['compile:templates', 'compile:styleguide']);
-
 // production build task
 gulp.task('build:production', ['clean'], function (cb) {
     plugins.sequence(
-        ['fonts', 'images', 'styles', 'scripts'],
-        ['compile', 'copy:extras'],
+        ['fonts', 'images', 'styles', 'scripts', 'copy:extras'],
+        ['compile:templates'],
         done
     );
 });
 
 gulp.task('build', ['clean'], function(done) {
     plugins.sequence(
-        ['fonts', 'images', 'styles', 'scripts'],
-        ['compile', 'copy:extras'],
+        ['fonts', 'images', 'styles', 'scripts', 'copy:extras'],
+        ['compile:templates'],
+        ['compile:styleguide'],
         ['browserSync', 'watch'],
         done
     );

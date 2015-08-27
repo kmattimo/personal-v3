@@ -1,8 +1,9 @@
 ---
 title: Default Button
 notes: Default buttons have no border, with an all-caps font
+category: components
 ---
 
 <button class="button {{#if classes}}{{classes}}{{/if}}" type="button">
-  {{#if default.text}}{{default.text}}{{else}}{{title}}{{/if}}
+  {{#if text}}{{text}}{{else}}{{title}}{{/if}}
 </button>

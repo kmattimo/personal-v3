@@ -1,11 +1,12 @@
 ---
 notes: Checkboxes are used when there are multiple selectable options
+category: components
 ---
 
 <label for="{{forms.checkbox.name}}">
     <input class="input-chk"
-            value="{{forms.checkbox.checked}}"
-            checked="{{forms.checkbox.checked}}"
+            value="{{forms.checkbox.value}}"
+            checked
             name="{{forms.checkbox.name}}"
             type="checkbox" />
     {{forms.checkbox.label}}
