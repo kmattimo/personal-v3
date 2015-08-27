@@ -1,9 +1,4 @@
 Kickstart is a website starter kit, living style guide creator, and task runner that helps you kickstart a website build and create a living style guide that grows with your site.
-##Note:
-*Current work is being performed on the [assemble](https://github.com/onenorth/kickstart/tree/assemble) branch.*
-> Please use the [assemble](https://github.com/onenorth/kickstart/tree/assemble) branch
-
-The [assemble](https://github.com/onenorth/kickstart/tree/assemble) branch will soon be merged into the `master` branch.
 
 ##Features
 * Command Line Interface
