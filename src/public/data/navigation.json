@@ -1,0 +1,13 @@
+{
+  "button": {
+    "text": "Nav Button",
+    "primary": {
+      "modifier": "button--nav button--primary",
+      "text": "Nav Button Primary"
+    },
+    "secondary": {
+      "modifier": "button--nav button--secondary",
+      "text": "Nav Button Secondary"
+    }
+  }
+}
