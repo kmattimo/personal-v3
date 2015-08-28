@@ -1,14 +1,23 @@
 {
-  "default": {
-    "text": "Default Button"
-  },
+  "text": "Button",
   "primary": {
+    "modifier": "button--primary",
     "text": "Primary Button"
   },
+  "secondary": {
+    "modifier": "button--secondary",
+    "text": "Secondary Button"
+  },
   "disabled": {
+    "modifier": "button--disabled",
     "text": "Disabled Button"
   },
+  "icon": {
+    "modifier": "button--icon",
+    "text": "Icon Button"
+  },
   "large": {
+    "modifier": "button--large",
     "text": "Large Button"
   }
 }
