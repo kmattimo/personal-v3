@@ -21,7 +21,7 @@ module.exports = {
     docs: srcDir + '/docs/**/*.{md,markdown}',
     pages: srcDir + '/templates/views/*.{hbs,html}',
     includes: srcDir + '/templates/views/partials/**/*.{hbs,html}',
-    data: srcAssetsDir + '/data/**/*.{json,yaml}',
+    data: srcAssetsDir + '/data/**/*.{json,yaml,yml}',
     scripts: srcAssetsDir + '/js/**/*.{js,jsx}',
     styles: srcAssetsDir + '/scss/**/*.{sass,scss}',
     images: srcAssetsDir + '/images/**/*.{gif,jpg,jpeg,png,svg,tiff}',
