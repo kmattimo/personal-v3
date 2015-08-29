@@ -113,7 +113,7 @@ gulp.task('fonts', function () {
 });
 
 // copy extra files task
-gulp.task('copy:extras', function (done) {
+gulp.task('copy:extras', function () {
     return gulp.src('./src/public/*.{ico,txt}')
         .pipe(gulp.dest(config.dest.base));
 });
