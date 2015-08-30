@@ -30,6 +30,7 @@ node_modules
 [Bb]build
 [Ss]ite
 [Ss]tyleguide
+.publish
 .sass-cache
 *.sketch
 *.sublime-project
