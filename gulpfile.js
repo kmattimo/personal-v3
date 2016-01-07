@@ -164,17 +164,18 @@ gulp.task('browserSync', function () {
 
 // watch task
 gulp.task('watch', function () {
-    // plugins.watch(config.src.html, function () {
-    //     plugins.sequence('compile', function() {
-    //         bsreload();
-    //     });
-    // });
+    plugins.watch([config.src.pages, config.src.includes, config.src.data], function () {
+        plugins.sequence('compile:templates', function() {
+            bsreload();
+        });
+    });
+
     plugins.watch(config.src.styles, function () {
-        gulp.start('styles:app')
+        gulp.start('styles')
     });
 
     plugins.watch(config.src.images, function () {
-        gulp.start('images:app')
+        gulp.start('images')
     });
 });
 
