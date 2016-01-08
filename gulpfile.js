@@ -123,6 +123,7 @@ gulp.task('compile:templates', function(done) {
         assets: config.dest.assets,
         data: config.src.data,
         production: false,
+        helpers: 'src/templates/helpers/**/*.js',
         layout: 'default-layout',
         layouts: 'src/templates/views/layouts/*.html',
         partials: {
