@@ -7,6 +7,9 @@ var srcAssetsDir = srcDir + '/public';
 var destDir = 'site';
 var destAssetsDir = destDir + '/public';
 
+// modules
+var imageminMozjpeg = require('imagemin-mozjpeg');
+
 module.exports = {
 
   dev: true, // gutil.env.dev
@@ -44,6 +47,12 @@ module.exports = {
           { removeViewBox: false },               // 3a
           { removeUselessStrokeAndFill: false },  // 3b
           { removeEmptyAttrs: false }             // 3c
+      ],
+      use: [
+        imageminMozjpeg({
+          progressive: true,
+          quality: 80
+        })
       ]
   },
 
