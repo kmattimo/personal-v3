@@ -33,7 +33,7 @@ var onError = function (err, cb) {
 
 // clean task
 gulp.task('clean', function (cb) {
-    del([
+    return del([
         config.dest.base,
         'styleguide'
     ], cb);
