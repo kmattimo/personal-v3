@@ -1,11 +1,20 @@
 (function(global, undefined) {
 
+
   var doc = global.document || null;
 
   var App = {
     init: function() {
       console.log("App initialized");
-
+      
+      jQuery = require('./jquery', function() {
+        
+      console.log( jQuery(".particleCanvas").width() );
+      console.log("!");
+      });
+      
+      require('./particles');
+      
       return this;
     },
 

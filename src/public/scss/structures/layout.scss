@@ -1,0 +1,15 @@
+@import "../base/colors";
+
+.content-wrapper {
+    position: absolute;
+    margin-top: 5%;
+    width: 100vw;
+    color: $heading-color;
+}
+
+.intro-image {
+    width: 30%;
+    height: auto;
+    opacity: .9
+    
+}

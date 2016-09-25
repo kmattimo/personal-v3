@@ -1,0 +1,40 @@
+
+$canvasWidth: 100vw;
+$canvasHeight: 100vh;
+
+html, body {
+			  text-align: center;
+			  margin:0;
+			  padding:0;
+			  background: #000000;
+			  color: #666666;
+			  line-height: 1.25em;
+        position: relative;
+		  }
+
+#outer {
+       position: fixed;
+       top: 50vh;
+       left: 50vw;
+       width: 1px;
+       height: 1px;
+       overflow: visible;
+     }
+     
+     #canvasContainer {
+       position: fixed;
+       width: $canvasWidth;
+       height: $canvasHeight;
+       top:  -( $canvasHeight / 2 );
+       left: -( $canvasWidth / 2);
+     }
+     
+     
+.particleCanvas {
+  display: block;
+  position: fixed;
+  left: 0;
+  top: 0;
+  // width: $canvasWidth;
+  // height: $canvasHeight;
+}
